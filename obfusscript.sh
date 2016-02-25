@@ -15,17 +15,20 @@ ProjectPath="/Users/RyoHo/Desktop/confuseTestProject"
 #替换文本存放路径（不能在项目目录或其子目录）
 SecretFile="/Users/RyoHo/Desktop/secret/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
 #第一个参数为项目路径
-if [ $1 ]
+if [[ $1 ]]
 then
-ProjectPath=$1
+if [[ $1 != "_" ]]; then
+	ProjectPath=$1
+fi
 fi
 #第二个参数指定密钥文件路径及文件名
-if [ $2 ]
+if [[ $2 ]]
 then
-SecretFile=$2
+if [[ $2 != "_" ]]; then
+	SecretFile=$2
+fi
 fi
 ##############################################################################
-echo  > $SecretFile
 
 #查找文本中所有要求混淆的属性\方法\类
 resultfiles=`grep 'ob_[A-Za-z0-9_]*_fus' -rl $ProjectPath`
@@ -36,6 +39,7 @@ then
 	exit
 else 
 	echo "开始混淆代码..."
+	echo  > $SecretFile
 fi
 
 x=$(awk  '
@@ -82,17 +86,16 @@ function random_string(len) {
 echo $x > $SecretFile
 
 recordnum=1
-while [ 1 == 1 ]; do
+while [[ 1 == 1 ]]; do
 	record=`echo $x|cut -d "|" -f$recordnum`
-	echo $record
 	if [[ -z $record ]]
 	then
 		break
 	fi
 	record1=`echo $record|cut -d ":" -f1`
-	echo "record1:"$record1
+	echo "原项:"$record1
 	record2=`echo $record|cut -d ":" -f2`
-	echo "record2:"$record2
+	echo "加密项:"$record2
 	#替换文件夹中所有文件的内容（支持正则）
 	#单引号不能扩展
 sed -i '' "s/${record1}/${record2}/g" `grep $record1 -rl $ProjectPath`
@@ -102,26 +105,25 @@ done
 
 #查找需要混淆的文件名并替换
 filerecordnum=1
-while [ 1 == 1 ]; do
+while [[ 1 == 1 ]]; do
 	filerecord=`echo $x|cut -d "|" -f$filerecordnum`
-	echo $filerecord
 	if [[ -z $filerecord ]]
 	then
 		break
 	fi
 	filerecord1=`echo $filerecord|cut -d ":" -f1`
-	echo "filerecord1:"$filerecord1
+	#echo "原项:"$filerecord1
 	filerecord2=`echo $filerecord|cut -d ":" -f2`
-	echo "filerecord2:"$filerecord2
+	#echo "加密项:"$filerecord2
 	#改文件名
 
-	find $ProjectPath -name $filerecord1"*"| awk 'BEGIN{}{
+	find $ProjectPath -name $filerecord1"*"| awk '
+	BEGIN{frecord1="'"$filerecord1"'";frecord2="'"$filerecord2"'";finish=1}
+	{
 		filestr=$0;
-		frecord1="'"$filerecord1"'"
-		frecord2="'"$filerecord2"'"
-		awkfilerecordnum="'"$filerecordnum"'"
 		gsub(frecord1,frecord2,filestr);
-		print "mv " $0 " " filestr";echo 第"awkfilerecordnum"个混淆文件处理完毕";
+		print "mv " $0 " " filestr";echo 第"finish"个混淆文件处理完毕";
+	    finish++;
 	}'|bash
 let "filerecordnum = $filerecordnum + 1"
 done
