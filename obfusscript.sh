@@ -26,7 +26,18 @@ SecretFile=$2
 fi
 ##############################################################################
 echo  > $SecretFile
+
 #查找文本中所有要求混淆的属性\方法\类
+resultfiles=`grep 'ob_[A-Za-z0-9_]*_fus' -rl $ProjectPath`
+#查找结果为空则退出
+if [[ -z $resultfiles ]]
+then
+	echo "项目没有需要混淆的代码"
+	exit
+else 
+	echo "开始混淆代码..."
+fi
+
 x=$(awk  '
 	BEGIN{srand();k=0;}
 #随机数生成函数
@@ -36,8 +47,7 @@ function random_int(min, max) {
 #随机字符串生成函数
 function random_string(len) {
 	result="UCS"k;
-	alpbetnum=split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,\
-		A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z", alpbet, ",");
+	alpbetnum=split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z", alpbet, ",");
     for (i=0; i<len; i++) {
         result = result""alpbet[ random_int(1, alpbetnum) ];
     }
@@ -66,7 +76,8 @@ function random_string(len) {
    gsub(tempstr,randomstr, x);
    x = substr(x, RSTART+RLENGTH);
 }
-}' `grep 'ob_[A-Za-z0-9_]*_fus' -rl $ProjectPath` )
+}' $resultfiles )
+
 #加密对写入密钥文件
 echo $x > $SecretFile
 
@@ -85,8 +96,8 @@ while [ 1 == 1 ]; do
 	#替换文件夹中所有文件的内容（支持正则）
 	#单引号不能扩展
 sed -i '' "s/${record1}/${record2}/g" `grep $record1 -rl $ProjectPath`
+echo "第"$recordnum"项混淆代码处理完毕"
 let "recordnum = $recordnum + 1"
-echo $recordnum
 done
 
 #查找需要混淆的文件名并替换
@@ -103,13 +114,14 @@ while [ 1 == 1 ]; do
 	filerecord2=`echo $filerecord|cut -d ":" -f2`
 	echo "filerecord2:"$filerecord2
 	#改文件名
+
 	find $ProjectPath -name $filerecord1"*"| awk 'BEGIN{}{
 		filestr=$0;
 		frecord1="'"$filerecord1"'"
 		frecord2="'"$filerecord2"'"
+		awkfilerecordnum="'"$filerecordnum"'"
 		gsub(frecord1,frecord2,filestr);
-		print "mv " $0 " " filestr;
+		print "mv " $0 " " filestr";echo 第"awkfilerecordnum"个混淆文件处理完毕";
 	}'|bash
 let "filerecordnum = $filerecordnum + 1"
-echo $filerecordnum
 done
