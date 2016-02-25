@@ -14,6 +14,16 @@ export LANG=C
 ProjectPath="/Users/RyoHo/Desktop/confuseTestProject"
 #替换文本存放路径（不能在项目目录或其子目录）
 SecretFile="/Users/RyoHo/Desktop/secret/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
+#第一个参数为项目路径
+if [ $1 ]
+then
+ProjectPath=$1
+fi
+#第二个参数指定密钥文件路径及文件名
+if [ $2 ]
+then
+SecretFile=$2
+fi
 ##############################################################################
 echo  > $SecretFile
 #查找文本中所有要求混淆的属性\方法\类
