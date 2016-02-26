@@ -3,7 +3,7 @@
 #
 #
 #  代码混淆脚本  RyoHo 2016.2.25
-#
+#  .git/.svn文件夹不替换 
 #
 ############################################################
 #识别含有多字节编码字符时遇到的解析冲突问题
@@ -31,7 +31,8 @@ fi
 ##############################################################################
 
 #查找文本中所有要求混淆的属性\方法\类
-resultfiles=`grep 'ob_[A-Za-z0-9_]*_fus' -rl $ProjectPath`
+resultfiles=`grep --exclude-dir=".svn" \
+--exclude-dir=".git" 'ob_[A-Za-z0-9_]*_fus' -rl $ProjectPath`
 #查找结果为空则退出
 if [[ -z $resultfiles ]]
 then
@@ -98,7 +99,8 @@ while [[ 1 == 1 ]]; do
 	echo "加密项:"$record2
 	#替换文件夹中所有文件的内容（支持正则）
 	#单引号不能扩展
-sed -i '' "s/${record1}/${record2}/g" `grep $record1 -rl $ProjectPath`
+sed -i '' "s/${record1}/${record2}/g" `grep --exclude-dir=".svn" \
+--exclude-dir=".git" $record1 -rl $ProjectPath`
 echo "第"$recordnum"项混淆代码处理完毕"
 let "recordnum = $recordnum + 1"
 done

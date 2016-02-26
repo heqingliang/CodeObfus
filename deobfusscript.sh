@@ -3,7 +3,7 @@
 #
 #
 #  代码还原脚本  RyoHo 2016.2.25
-#
+#  .git/.svn文件夹不替换 
 #
 ############################################################
 #识别含有多字节编码字符时遇到的解析冲突问题
@@ -43,7 +43,8 @@ while [[ 1 == 1 ]]; do
 	record2=`echo $record|cut -d ":" -f2`
 	echo "加密项:"$record2
 	#若项目中加密项与密钥文件的加密项不符合则退出程序
-	searchresult=`grep $record2 -rl $ProjectPath`
+	searchresult=`grep --exclude-dir=".svn" \
+	--exclude-dir=".git" $record2 -rl $ProjectPath`
 	if [[ -z $searchresult ]]; then
 		echo "指定的密钥文件不能还原"
 		exit
