@@ -11,9 +11,23 @@ export LC_CTYPE=C
 export LANG=C
 #配置项：
 #项目路径
-ProjectPath="/Users/RyoHo/Desktop/confuseTestProject"
+ProjectPath="/Users/RyoHo/Desktop/jiami_ob"
+SecretfilePath="/Users/RyoHo/jiami_ob_secret/secret"
+#秘密目录不能是项目目录子目录
+if [[ `echo $SecretfilePath|grep $ProjectPath` ]]; then
+	echo "秘密路径不能是项目路径的子目录"
+	exit
+fi
+if [ ! -x $SecretfilePath ]; then
+mkdir -p $SecretfilePath
+fi
+#不存在秘密目录则创建
+if [ ! -x $SecretfilePath ]; then
+mkdir -p $SecretfilePath
+fi
 #替换文本存放路径（不能在项目目录或其子目录）
-SecretFile="/Users/RyoHo/Desktop/secret/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
+SecretFile=$SecretfilePath"/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
+
 #第一个参数为项目路径
 if [[ $1 ]]
 then
