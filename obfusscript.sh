@@ -18,15 +18,6 @@ if [[ `echo $SecretfilePath|grep $ProjectPath` ]]; then
 	echo "秘密路径不能是项目路径的子目录"
 	exit
 fi
-if [ ! -x $SecretfilePath ]; then
-mkdir -p $SecretfilePath
-fi
-#不存在秘密目录则创建
-if [ ! -x $SecretfilePath ]; then
-mkdir -p $SecretfilePath
-fi
-#替换文本存放路径（不能在项目目录或其子目录）
-SecretFile=$SecretfilePath"/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
 
 #第一个参数为项目路径
 if [[ $1 ]]
@@ -39,9 +30,17 @@ fi
 if [[ $2 ]]
 then
 if [[ $2 != "_" ]]; then
-	SecretFile=$2
+	SecretfilePath=$2
 fi
 fi
+
+#不存在秘密目录则创建
+if [ ! -x $SecretfilePath ]; then
+mkdir -p $SecretfilePath
+fi
+#替换文本存放路径（不能在项目目录或其子目录）
+SecretFile=$SecretfilePath"/rlf"$(date +%Y%m%d)"_"$(date +%H%M)
+
 ##############################################################################
 
 #查找文本中所有要求混淆的属性\方法\类
