@@ -4,7 +4,7 @@
 Simple Shell script which can Obfuscate Code before pack, use for App, especially for iOS project. 
 
 <h3>usage</h3>
-<p>Change the property or method name <b>AAA</b> as <b>ob_AAA_fus</b> and run script <b>obfusscript.sh</b> to obfuscate in the project.</p>
+<p>Change the property or method name <b color="grey">AAA</b> as <b color="grey">ob_AAA_fus</b> and run script <b color="grey">obfusscript.sh</b> to obfuscate in the project.</p>
 <p>Run script <b>deobfusscript.sh</b> to retore.</p>
 
 <p>You need to set these path Before running script.</p>
